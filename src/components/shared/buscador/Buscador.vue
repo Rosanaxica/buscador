@@ -1,91 +1,134 @@
 <template>
-  <div class="card p-4">
-    <div class="row">
-      <div class="col-lg-12">
-        <h1 class="h4">Buscador de Usuários e Repositorios GIT</h1>
-      </div>
-    </div>
-    <div class="row mt-4">
-      <div class="col-lg-9 col-md-9">
-        <input
-          type="search"
-          class="form-control"
-          id="busca"
-          placeholder="Digite o usuario que deseja buscar"
-          aria-label="digite o usuario git que deseja buscar"
-          v-model="busca"
-          v-on:keyup.enter="buscar(busca)"
-        >
-      </div>
-
-      <div class="col-lg-3 col-md-3">
-        <button class="btn bg-purple" v-on:click="buscar(busca)">Pesquisar Usuarios</button>
-      </div>
-    </div>
-    <div v-if="usuarios!=''">
-    
-      <div class="row mt-4" v-for="usuario in usuarios">
- 
-        <div class="col-lg-4 col-md-4">
-          <img class="img-thumbnail shadow" v-bind:src="usuario.avatar_url" width="200">
+  <div>
+    <div class="jumbotron text-center">
+      <div class="container mx-auto">
+        <div class="jumbotron-heading">
+          <h1 class="text-light font-weight-bold">Git Searcher</h1>
         </div>
-        <div class="col-lg-8 col-md-8">
-          <p class="display-4">{{usuario.name}}</p>
-          <p>{{usuario.bio}}</p>
-          <b><font-awesome-icon icon="user" /></b>
-          {{usuario.login}}
-          <br>
-          <b><font-awesome-icon icon="at" /></b>
-           <a v-bind:href="'mailto:'+usuario.email">{{usuario.email}}</a>
-        
-          <br>
-          <b><font-awesome-icon icon="envelope" /></b>
-          <a v-bind:href="usuario.blog">{{usuario.blog}}</a>
-          <br>
-          <b>Criado em:</b>
-          <span>{{usuario.created_at | moment("D/MM/YYYY") }}</span>
-
-          <br>
-          <b>Ultima modificação :</b>
-          {{usuario.updated_at| moment("D/MM/YYYY") }}
-          <br>
-        </div>
-         <div class="row mt-4">
-        <div class="col-lg-12 col-md-12">
-          <a href="#" class="btn btn-outline-purple" v-on:click="buscarRepo(busca)">
-            Repositorios
-            <span class="badge badge-purple">{{usuario.public_repos}}</span>
-          </a>
-        </div>
-      </div>
-      </div>
-     
-    </div>
-    <div class="row mt-4">
-      <div class="col-lg-12 col-md-12">
-        <div class="alert alert-danger" role="alert">Usuário não encontrado</div>
-      </div>
-    </div>
-
-    <hr>
-    <div v-if="repositorios!=''">
-      <h2>Repositórios</h2>
-     
-       
-      <div class="row">
-
-        <div class="col-lg-4" v-for="indice in repositorios">
-
-          <a v-bind:href="indice.html_url" target="_blank">
-          <div class="card card-repo p-3 m-3">
-          <h3 class="h5">{{indice.name}}</h3>
-          <small>{{indice.description}}</small>
+        <p
+          class="text-white"
+        >GitHub é um sistema de gerenciamento de projetos e versões de códigos assim como uma plataforma de rede social criado para desenvolvedores. Mas para que o GitHub é utilizado? Entre outras coisas, ele permite que você trabalhe em projetos colaborativos com desenvolvedores de todo o mundo, planeje seus projetos e acompanhe o trabalho.</p>
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="input-group mb-3">
+              <input
+                type="text"
+                v-model="busca"
+                v-on:keyup.enter="buscar(busca)"
+                class="form-control"
+                placeholder="Digite o usuario que deseja buscar"
+                aria-label="digite o usuario git que deseja buscar"
+                autocomplete="on"
+              >
+              <div class="input-group-append">
+                <button
+                  class="btn btn-secondary"
+                  type="button"
+                  id="button-addon2"
+                  v-on:click="buscar(busca)"
+                  aria-label="buscar"
+                >
+                  <font-awesome-icon icon="search"/>
+                </button>
+              </div>
+            </div>
           </div>
-          </a>
-  
         </div>
       </div>
-  </div>
+    </div>
+
+    <main class="container-fluid" ref="main">
+      <div v-show="usuario!='' && erro==false">
+        <div class="card col-lg-12 my-3 pb-3">
+          <div class="row mt-4">
+            <div class="col-lg-4 col-md-4">
+              <img class="img-thumbnail shadow" v-bind:src="usuario.avatar_url" width="200">
+            </div>
+            <div class="col-lg-8 col-md-8">
+              <p class="display-4">{{usuario.name}}</p>
+              <p>{{usuario.bio}}</p>
+              <b>
+                <font-awesome-icon icon="user"/>
+              </b>
+              {{usuario.login}}
+              <br>
+              <b>
+                <font-awesome-icon icon="at"/>
+              </b>
+              <a v-bind:href="'mailto:'+usuario.email">{{usuario.email}}</a>
+
+              <br>
+              <b>
+                <font-awesome-icon icon="envelope"/>
+              </b>
+              <a v-bind:href="usuario.blog">{{usuario.blog}}</a>
+              <br>
+              <b>Criado em:</b>
+              <span>{{usuario.created_at | moment("D/MM/YYYY") }}</span>
+
+              <br>
+              <b>Ultima modificação :</b>
+              {{usuario.updated_at| moment("D/MM/YYYY") }}
+              <br>
+            </div>
+          </div>
+        </div>
+        <div class="row mt-4">
+          <div class="col-lg-12 col-md-12">
+            <button
+              href="#"
+              class="btn btn-outline-purple col-lg-12"
+              v-on:click="buscarRepo(busca,page),getPaginacao(usuario.public_repos)"
+            >
+              Repositorios
+              <span class="badge badge-purple">{{usuario.public_repos}}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="row mt-4 mx-2" v-if="erro">
+        <div class="col-lg-12 col-md-12 pt-3 card">
+          <div class="alert alert-danger" role="alert">
+            <font-awesome-icon icon="exclamation"/>Usuário não encontrado
+          </div>
+        </div>
+      </div>
+      <hr>
+      <div v-show="repositorios!='' && erro==false" class="card p-3">
+        <h2>Repositórios</h2>
+
+        <div class="row">
+          <div class="col-lg-4" v-for="indice in repositorios">
+            <a v-bind:href="indice.html_url" target="_blank">
+              <div class="card card-repo p-3 m-3 shadow">
+                <h3 class="h5">{{indice.name}}</h3>
+                <small>{{indice.description}}</small>
+              </div>
+            </a>
+          </div>
+        </div>
+        <div class="row">
+          <nav aria-label="paginacao">
+            <ul class="pagination">
+              <li class="page-item disabled">
+                <a class="page-link" href="#" tabindex="-1">Anterior</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link"></a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="#">Next</a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+        <div class="row mt-4" v-show="errorepo">
+          <div class="col-lg-12 col-md-12">
+            <div class="alert alert-danger" role="alert">Não há repositorios</div>
+          </div>
+        </div>
+      </div>
+    </main>
   </div>
 </template>
 
@@ -96,35 +139,63 @@ export default {
     return {
       busca: "",
       repos_url: "",
-      usuarios: [],
-      repositorios: []
+      usuario: [],
+      repositorios: [],
+      erro: false,
+      errorepo: false,
+      paginaAtual: "",
+      paginas: [],
+      page: ""
     };
   },
   methods: {
     buscar: function(busca) {
+      console.log(busca);
       this.$http
-       // .get("https://api.github.com/users/" + busca)
-        .get("https://api.github.com/search/users?q="+busca)
+        .get("https://api.github.com/users/" + busca)
+        //.get("https://api.github.com/search/users?q="+busca)
         .then(res => res.json())
-        .then(
-          usuarios => (this.usuarios = usuarios),
-          err => console.log(err),
-          (this.usuarios[0] = "Não encontrado")
-        );
+        .then(usuario => {
+          this.usuario = usuario;
+          this.erro = false;
+          this.setFocus();
+          
+          })
+        .catch(err => {
+          console.log(err);
+          this.erro = true;
+        });
     },
-    buscarRepo: function(busca) {
+    buscarRepo: function(busca, page) {
       this.$http
-        .get("https://api.github.com/users/" + busca + "/repos")
+        .get("https://api.github.com/users/" + busca + "/repos?page=1")
         .then(res => res.json())
-        .then(
-          repositorios => (this.repositorios = repositorios),
-          err => console.log(err)
-        );
-    }
+        .then(repositorios => {
+          this.repositorios = repositorios;
+          this.erro = false;
+        })
+        .catch(err => {
+          console.log(err);
+          this.errorepo = true;
+          this.repositorios = "";
+        });
+    },
+    getPaginacao: function(qtdRepos) {
+      this.page = (qtdRepos / 30).toFixed(0);
+      this.paginas = Array.from({ length: this.page }, (v, k) => k);
+      console.log(this.paginas);
+    },
+        setFocus: function()
+    {    
+    this.$refs.main.focus();
+  }
   }
 };
 </script>
 <style>
+body {
+  font-family: "Quicksand", sans-serif;
+}
 .bg-purple {
   background-color: blueviolet;
   color: white;
@@ -139,14 +210,9 @@ export default {
 .bg-purple:focus {
   box-shadow: 0 0 0 0.2rem rgba(152, 23, 216, 0.274);
 }
-input[type=search]:focus{
-    box-shadow: 0 0 0 0.2rem rgba(152, 23, 216, 0.274);
-    border-color: blueviolet;
-    background-color:rgb(233, 195, 252)!important;
-}
-input[type=search]{
-    background-color:rgb(233, 195, 252)!important;
-    border-color: blueviolet;
+input[type="search"]:focus {
+  box-shadow: 0 0 0 0.2rem rgba(152, 23, 216, 0.274);
+  border-color: blueviolet;
 }
 .btn-outline-purple {
   color: blueviolet;
@@ -160,5 +226,40 @@ input[type=search]{
   color: white;
   background-color: blueviolet;
 }
-.card-repo{height: 250px;}
+.card-repo {
+  height: 250px;
+}
+a:link {
+  text-decoration: none;
+  color: blueviolet;
+}
+.jumbotron {
+  background-image: url("/src/assets/fundo_busca.png");
+  background-repeat: no-repeat;
+  min-height: 500px;
+  background-size: 100% 100%;
+}
+.jumbotron .container {
+  max-width: 40rem;
+  box-sizing: border-box;
+  background-color: rgba(148, 59, 207, 0.671);
+}
+.bounce-enter-active {
+  animation: bounce-in 0.5s;
+}
+.bounce-leave-active {
+  animation: bounce-in 0.5s reverse;
+}
+@keyframes bounce-in {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.5);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@import url("https://fonts.googleapis.com/css?family=Quicksand");
 </style>

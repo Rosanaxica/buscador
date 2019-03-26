@@ -1,6 +1,13 @@
 <template>
-  <div id="app" class="container">
-
+  <div id="app" >
+    <header>
+    <nav class="navbar navbar-dark bg-secondary ">
+  <a class="navbar-brand" href="#">
+    <span class="btn btn-secondary">
+    <font-awesome-icon :icon="['fab', 'github-alt']" /></span>
+   </a>
+</nav>
+</header>
 <meu-buscador ></meu-buscador>
 
 </div>

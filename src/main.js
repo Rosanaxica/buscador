@@ -7,14 +7,22 @@ import VueResource from 'vue-resource';
 import VueRouter from 'vue-router';
 import {routes} from './routes';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { faCoffee, faAt, faEllipsisV, faEnvelope, faUser, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons'
+import { library } from '@fortawesome/fontawesome-svg-core';
+
+import { faGithubAlt } from "@fortawesome/free-brands-svg-icons";
+
+import {  faAt, faEnvelope, faUser, faExternalLinkAlt, faSearch, faExclamation } from '@fortawesome/free-solid-svg-icons'
 
 Vue.component('font-awesome-icon', FontAwesomeIcon);
 library.add(faAt)
 library.add(faEnvelope)
 library.add(faUser)
 library.add(faExternalLinkAlt)
+library.add(faSearch)
+library.add(faExclamation)
+library.add (faGithubAlt);
+
+
 
 
 Vue.use(require('vue-moment'));
