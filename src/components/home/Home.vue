@@ -3,11 +3,12 @@
     <header>
     <nav class="navbar navbar-dark bg-secondary ">
   <a class="navbar-brand" href="#">
-    <span class="btn btn-secondary">
+    <span class="logo btn text-white">
     <font-awesome-icon :icon="['fab', 'github-alt']" /></span>
    </a>
 </nav>
 </header>
+
 <meu-buscador ></meu-buscador>
 
 </div>
@@ -34,5 +35,6 @@ export default {
 </script>
 
 <style>
-
+.logo{ font-size: 30px; margin: 0;}
+.logo:hover{transform: scale(2.5); }
 </style>

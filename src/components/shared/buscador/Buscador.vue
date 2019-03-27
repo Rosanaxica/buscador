@@ -1,5 +1,10 @@
+
 <template>
+
+ 
+ 
   <div>
+         
     <div class="jumbotron text-center">
       <div class="container mx-auto">
         <div class="jumbotron-heading">
@@ -14,19 +19,22 @@
               <input
                 type="text"
                 v-model="busca"
-                v-on:keyup.enter="buscar(busca)"
+                v-on:keyup.enter="clicaEnter()"
                 class="form-control"
                 placeholder="Digite o usuario que deseja buscar"
                 aria-label="digite o usuario git que deseja buscar"
-                autocomplete="on"
-              >
+                ref="input"
+                
+                       >
               <div class="input-group-append">
                 <button
                   class="btn btn-secondary"
                   type="button"
-                  id="button-addon2"
+                  id="buscar"
+                  ref="buscar"
                   v-on:click="buscar(busca)"
                   aria-label="buscar"
+                  v-scroll-to="'#linkelement'"
                 >
                   <font-awesome-icon icon="search"/>
                 </button>
@@ -37,9 +45,12 @@
       </div>
     </div>
 
-    <main class="container-fluid" ref="main">
-      <div v-show="usuario!='' && erro==false">
-        <div class="card col-lg-12 my-3 pb-3">
+    <main class="container-fluid"  >
+   
+      <a class="" href="#" v-on:click="setFocusTop()">Scroll to top</a>
+      <div v-if="usuario!='' && erro==false">
+
+        <div class="card col-lg-12 my-3 pb-3"   >
           <div class="row mt-4">
             <div class="col-lg-4 col-md-4">
               <img class="img-thumbnail shadow" v-bind:src="usuario.avatar_url" width="200">
@@ -55,7 +66,7 @@
               <b>
                 <font-awesome-icon icon="at"/>
               </b>
-              <a v-bind:href="'mailto:'+usuario.email">{{usuario.email}}</a>
+              <a  v-bind:href="'mailto:'+usuario.email">{{usuario.email}}</a>
 
               <br>
               <b>
@@ -77,14 +88,17 @@
           <div class="col-lg-12 col-md-12">
             <button
               href="#"
-              class="btn btn-outline-purple col-lg-12"
+              class="btn btn-outline-purple col-lg-12 box"
               v-on:click="buscarRepo(busca,page),getPaginacao(usuario.public_repos)"
+               id="linkelement"
             >
               Repositorios
               <span class="badge badge-purple">{{usuario.public_repos}}</span>
             </button>
           </div>
         </div>
+         <a href="#" ref="main" aria-hidden="true"></a>
+                
       </div>
       <div class="row mt-4 mx-2" v-if="erro">
         <div class="col-lg-12 col-md-12 pt-3 card">
@@ -128,13 +142,17 @@
           </div>
         </div>
       </div>
+ 
     </main>
   </div>
+
 </template>
 
 <script>
+
 export default {
   name: "buscador",
+   
   data() {
     return {
       busca: "",
@@ -145,25 +163,26 @@ export default {
       errorepo: false,
       paginaAtual: "",
       paginas: [],
-      page: ""
+      page: "",
+
     };
   },
   methods: {
     buscar: function(busca) {
       console.log(busca);
+      
       this.$http
         .get("https://api.github.com/users/" + busca)
         //.get("https://api.github.com/search/users?q="+busca)
         .then(res => res.json())
         .then(usuario => {
-          this.usuario = usuario;
-          this.erro = false;
-          this.setFocus();
-          
+          this.usuario = usuario
+          this.erro = false
+           
           })
         .catch(err => {
-          console.log(err);
-          this.erro = true;
+          console.log(err)
+          this.erro = true
         });
     },
     buscarRepo: function(busca, page) {
@@ -171,25 +190,43 @@ export default {
         .get("https://api.github.com/users/" + busca + "/repos?page=1")
         .then(res => res.json())
         .then(repositorios => {
-          this.repositorios = repositorios;
-          this.erro = false;
+          this.repositorios = repositorios
+          this.erro = false
         })
         .catch(err => {
-          console.log(err);
-          this.errorepo = true;
-          this.repositorios = "";
+          console.log(err)
+          this.errorepo = true
+          this.repositorios = ""
         });
     },
     getPaginacao: function(qtdRepos) {
-      this.page = (qtdRepos / 30).toFixed(0);
-      this.paginas = Array.from({ length: this.page }, (v, k) => k);
+      this.page = (qtdRepos / 30).toFixed(0)
+      this.paginas = Array.from({ length: this.page }, (v, k) => k)
       console.log(this.paginas);
     },
-        setFocus: function()
-    {    
-    this.$refs.main.focus();
+       setFocus(){
+         this.$nextTick(() => {
+           this.$refs.main.focus();
+       console.log("setando o focus nessa bagaça");  
+       });
+       
+     
+  },
+    setFocusTop(){
+         this.$nextTick(() => {
+           this.$refs.input.focus();
+       console.log("setando o focus nessa bagaça pra cima");  
+       });
+      
+     
+  },
+  clicaEnter(){
+    this.$refs.buscar.click();
   }
-  }
+  },
+  
+    
+  
 };
 </script>
 <style>
@@ -236,7 +273,7 @@ a:link {
 .jumbotron {
   background-image: url("/src/assets/fundo_busca.png");
   background-repeat: no-repeat;
-  min-height: 500px;
+  min-height: 600px;
   background-size: 100% 100%;
 }
 .jumbotron .container {
@@ -244,22 +281,7 @@ a:link {
   box-sizing: border-box;
   background-color: rgba(148, 59, 207, 0.671);
 }
-.bounce-enter-active {
-  animation: bounce-in 0.5s;
-}
-.bounce-leave-active {
-  animation: bounce-in 0.5s reverse;
-}
-@keyframes bounce-in {
-  0% {
-    transform: scale(0);
-  }
-  50% {
-    transform: scale(1.5);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
+
+
 @import url("https://fonts.googleapis.com/css?family=Quicksand");
 </style>
